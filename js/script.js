@@ -1,7 +1,18 @@
-const button = document.querySelector("button");
+const loginForm = document.getElementById("loginForm");
 
-button.addEventListener("click", function(){
+loginForm.addEventListener("submit", function(event){
 
-    alert("Login page coming soon!");
+    event.preventDefault();
 
-}); 
+    const email = document.getElementById("email").value;
+
+    const password = document.getElementById("password").value;
+
+    alert(
+        "Login Clicked\n\nEmail: " +
+        email +
+        "\nPassword: " +
+        password
+    );
+
+});
