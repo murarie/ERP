@@ -10,10 +10,7 @@ if (loginForm) {
 
         const password = document.getElementById("password").value;
 
-        alert(
-            "Login Successful!\n\n" +
-            "Email: " + email
-        );
+        window.location.href = "dashboard.html";
 
     });
 
