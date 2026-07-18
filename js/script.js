@@ -1,18 +1,48 @@
 const loginForm = document.getElementById("loginForm");
 
-loginForm.addEventListener("submit", function(event){
+if (loginForm) {
 
-    event.preventDefault();
+    loginForm.addEventListener("submit", function(event){
 
-    const email = document.getElementById("email").value;
+        event.preventDefault();
 
-    const password = document.getElementById("password").value;
+        const email = document.getElementById("email").value;
 
-    alert(
-        "Login Clicked\n\nEmail: " +
-        email +
-        "\nPassword: " +
-        password
-    );
+        const password = document.getElementById("password").value;
 
-});
+        alert(
+            "Login Successful!\n\n" +
+            "Email: " + email
+        );
+
+    });
+
+}
+
+const registerForm = document.getElementById("registerForm");
+
+if (registerForm) {
+
+    registerForm.addEventListener("submit", function(event){
+
+        event.preventDefault();
+
+        const password =
+            document.getElementById("regPassword").value;
+
+        const confirm =
+            document.getElementById("confirmPassword").value;
+
+        if(password !== confirm){
+
+            alert("Passwords do not match.");
+
+            return;
+
+        }
+
+        alert("Registration Successful!");
+
+    });
+
+}
