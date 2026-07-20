@@ -166,7 +166,71 @@ app.post("/register", async (req, res) => {
 
 });
 
+// ---------------- LOGIN ----------------
 
+app.post("/login", (req, res) => {
+
+    const { email, password } = req.body;
+
+    db.query(
+
+        "SELECT * FROM students WHERE email = ?",
+
+        [email],
+
+        async (error, results) => {
+
+            if (error) {
+
+                return res.status(500).json({
+                    message: "Database Error"
+                });
+
+            }
+
+            if (results.length === 0) {
+
+                return res.status(401).json({
+                    message: "Invalid Email or Password"
+                });
+
+            }
+
+            const student = results[0];
+
+            const isMatch = await bcrypt.compare(
+                password,
+                student.password
+            );
+
+            if (!isMatch) {
+
+                return res.status(401).json({
+                    message: "Invalid Email or Password"
+                });
+
+            }
+
+            res.json({
+
+                message: "Login Successful",
+
+                student: {
+
+                    id: student.id,
+                    full_name: student.full_name,
+                    roll_number: student.roll_number,
+                    email: student.email
+
+                }
+
+            });
+
+        }
+
+    );
+
+});
 
 app.listen(PORT, () => {
 
