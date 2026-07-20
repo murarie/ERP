@@ -1,14 +1,17 @@
 const express = require("express");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 
 const db = require("./config/db");
 
 const app = express();
-
 const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
+
+
+// ---------------- HOME ----------------
 
 app.get("/", (req, res) => {
 
@@ -24,57 +27,146 @@ app.get("/", (req, res) => {
 
 });
 
-app.post("/register", (req, res) => {
+
+// ---------------- REGISTER ----------------
+
+app.post("/register", async (req, res) => {
 
     const {
 
         full_name,
-
         roll_number,
-
         email,
-
         password
 
     } = req.body;
 
-    const sql = `
-        INSERT INTO students
-        (full_name, roll_number, email, password)
-        VALUES (?, ?, ?, ?)
-    `;
+    try {
 
-    db.query(
+        // Check if email already exists
 
-        sql,
+        db.query(
 
-        [full_name, roll_number, email, password],
+            "SELECT * FROM students WHERE email = ?",
 
-        (error, result) => {
+            [email],
 
-            if (error) {
+            async (error, emailResult) => {
 
-                console.log(error);
+                if (error) {
 
-                return res.status(500).json({
+                    return res.status(500).json({
+                        message: "Database Error"
+                    });
 
-                    message: "Registration Failed"
+                }
 
-                });
+                if (emailResult.length > 0) {
+
+                    return res.status(400).json({
+                        message: "Email already exists"
+                    });
+
+                }
+
+                // Check if roll number already exists
+
+                db.query(
+
+                    "SELECT * FROM students WHERE roll_number = ?",
+
+                    [roll_number],
+
+                    async (error, rollResult) => {
+
+                        if (error) {
+
+                            return res.status(500).json({
+                                message: "Database Error"
+                            });
+
+                        }
+
+                        if (rollResult.length > 0) {
+
+                            return res.status(400).json({
+                                message: "Roll Number already exists"
+                            });
+
+                        }
+
+                        // Hash password
+
+                        const hashedPassword =
+                            await bcrypt.hash(password, 10);
+
+                        // Insert student
+
+                        const sql = `
+                            INSERT INTO students
+                            (full_name, roll_number, email, password)
+                            VALUES (?, ?, ?, ?)
+                        `;
+
+                        db.query(
+
+                            sql,
+
+                            [
+
+                                full_name,
+
+                                roll_number,
+
+                                email,
+
+                                hashedPassword
+
+                            ],
+
+                            (error, result) => {
+
+                                if (error) {
+
+                                    return res.status(500).json({
+                                        message: "Registration Failed"
+                                    });
+
+                                }
+
+                                res.json({
+
+                                    message: "Registration Successful"
+
+                                });
+
+                            }
+
+                        );
+
+                    }
+
+                );
 
             }
 
-            res.json({
+        );
 
-                message: "Registration Successful"
+    }
 
-            });
+    catch (err) {
 
-        }
+        res.status(500).json({
 
-    );
+            message: "Server Error"
+
+        });
+
+    }
 
 });
+
+
 
 app.listen(PORT, () => {
 
