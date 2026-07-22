@@ -3,11 +3,13 @@ const API_URL = "http://localhost:3000";
 
 // ---------------- LOGIN ----------------
 
+
+
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
 
-    loginForm.addEventListener("submit", function (event) {
+    loginForm.addEventListener("submit", async function (event) {
 
         event.preventDefault();
 
@@ -15,9 +17,46 @@ if (loginForm) {
 
         const password = document.getElementById("password").value;
 
-        // Login API will be added later
+        try {
 
-        window.location.href = "dashboard.html";
+            const response = await fetch(`${API_URL}/login`, {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type": "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    email,
+                    password
+
+                })
+
+            });
+
+            const data = await response.json();
+
+            alert(data.message);
+
+            if (response.ok) {
+
+                window.location.href = "dashboard.html";
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            alert("Unable to connect to the server.");
+
+        }
 
     });
 
